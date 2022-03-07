@@ -12,7 +12,7 @@ struct RecipeTabView: View {
         
         TabView {
             
-            Text("Featured view")
+           RecipeFeaturedView()
                 .tabItem {
                     VStack {
                         Image(systemName: "star.fill")
@@ -29,6 +29,8 @@ struct RecipeTabView: View {
                 }
             
         }
+        .environmentObject(RecipeModel())
+        // will automaticlly populate the subviews with data
     }
 }
 
