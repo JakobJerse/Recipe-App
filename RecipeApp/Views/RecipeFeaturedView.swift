@@ -11,6 +11,7 @@ struct RecipeFeaturedView: View {
     
     @EnvironmentObject var model:RecipeModel
     @State var isDetailViewShowing = false
+    @State var tabSelectionIndex = 0
     
     var body: some View {
         
@@ -26,7 +27,7 @@ struct RecipeFeaturedView: View {
             
             GeometryReader { geo in
                 // TabView is used for implementig swipable cards
-                TabView {
+                TabView(selection: $tabSelectionIndex) {
                     
                     // Loop through each recipe
                     ForEach (0..<model.recipes.count) { index in
@@ -58,7 +59,8 @@ struct RecipeFeaturedView: View {
                                     
                                 }
                             })
-                                .sheet(isPresented: $isDetailViewShowing) {
+                            .tag(index)
+                            .sheet(isPresented: $isDetailViewShowing) {
                                     // Show the recipe detail
                                     RecipeDetailView(recipe: model.recipes[index])
                                 }
@@ -76,20 +78,29 @@ struct RecipeFeaturedView: View {
                 
             }
             
+            
             VStack(alignment: .leading, spacing: 10) {
                 Text("Preparation Time:")
                     .font(.headline)
-                Text("1 hour")
+                Text(model.recipes[tabSelectionIndex].prepTime)
                 Text("Highlights")
                     .font(.headline)
-                Text("Healthy, Hearty")
+                RecipeHighlights(highlights: model.recipes[tabSelectionIndex].highlights)
             }
             .padding([.leading, .bottom])
 
         }
-        
-        
-        
+        .onAppear {
+            setFeaturedIndex()  // nastavi ustrezen tabSelection index za prvi featured recipe
+        }
+    }
+    
+    func setFeaturedIndex() {
+        // Find the index of first recipe that is featured
+        var index = model.recipes.firstIndex { (recipe) -> Bool in
+                return recipe.featured
+        }
+        tabSelectionIndex = index ?? 0
     }
 }
 
